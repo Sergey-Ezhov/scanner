@@ -142,7 +142,6 @@ def main():
         print (f"Web Server running on port: {port}")
         server.serve_forever()
     except KeyboardInterrupt:
-        print (" ^C entered, stopping web server....")
         server.server_close()
 
 # Запуск главной функции
