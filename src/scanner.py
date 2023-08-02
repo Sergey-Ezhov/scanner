@@ -6,37 +6,25 @@ from io import BytesIO
 import ast
 import os
 import json
+import ipaddress
 import requests
 
 # Объявляем функцию для сканирование сети
 def ping_sweep(ip_of_host, num_of_host):
     # Проверяем, что использован верный формат для IP-адреса
     try:
-        ip_parts = list(map(int, ip_of_host.split(".")))
+        scanned_ip = ipaddress.ip_address(ip_of_host)+num_of_host
     except ValueError:
         return(
             f"[#] Результат сканирование: {ip_of_host} [#]\n"
             "Неверный формат IP-адреса\n"
         )
-    ip_parts[-1] += num_of_host
-    scanned_ip = ".".join(list(map(str,ip_parts[0:len(ip_parts)])))
-    # Проверяем не выходит ли адрес за диапазон
-    if  all(
-            [len(ip_parts) == 4,
-             *[0 <= octect <= 255 for octect in ip_parts]]
-        ):
-        # Если IP-адрес корректный
-        response = os.popen(f"ping -c 1 {scanned_ip}")
-        res = response.readlines()
-        return(
-            f"[#] Результат сканирование: {scanned_ip} [#]\n" +
-            f"{res[1]}".encode("cp1251").decode("cp866")
-        )
-    # Если IP-адрес некорректный
+    response = os.popen(f"ping -c 1 {scanned_ip}")
+    res = response.readlines()
     return(
-        f"[#] Результат сканирование: {scanned_ip} [#]\n"
-        "Неверный IP-адрес\n"
-    )
+        f"[#] Результат сканирование: {scanned_ip} [#]\n" +
+        f"{res[1]}"
+        )
 
 # Объявляем функцию для отправки HTTP запросов
 def sent_http_request(target, method, headers=None, payload=None):
@@ -155,7 +143,7 @@ def main():
         server.serve_forever()
     except KeyboardInterrupt:
         print (" ^C entered, stopping web server....")
-        server.shutdown()
+        server.server_close()
 
 # Запуск главной функции
 if __name__ == "__main__":
