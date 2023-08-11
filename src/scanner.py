@@ -3,7 +3,6 @@
 # Импортируем необходимые библиотеки
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from io import BytesIO
-import ast
 import os
 import json
 import ipaddress
@@ -87,7 +86,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
             response = BytesIO()
             # Пытаемся разобрать запрос
             try:
-                data = ast.literal_eval(message.decode('utf-8'))
+                data = json.loads(message.decode('utf-8'))
                 result = sent_http_request(data['Target'], data['Method'],
                               str.split(data['Header']+':'+data['Header-value'])
                 )
@@ -110,7 +109,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
             response = BytesIO()
             # Пытаемся разобрать запрос
             try:
-                data = ast.literal_eval(message.decode('utf-8'))
+                data = json.loads(message.decode('utf-8'))
                 # Проверяем переданные данные
                 try:
                     for host_num in range(int (data['count'])):
